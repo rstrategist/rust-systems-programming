@@ -11,7 +11,8 @@
 		"vscode": {
 			"extensions": [
 				"rust-lang.rust-analyzer",
-				"GitHub.copilot"
+				"GitHub.copilot",
+				"dustypomerleau.rust-syntax"
 			]
 		}
 	}
