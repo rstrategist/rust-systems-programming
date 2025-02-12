@@ -16,10 +16,11 @@ use std::fs::File;
 /// * `file_path` - A string slice that holds the path to the log file
 ///
 /// # Example
-/// To locate the log files, compress them, and read their contents, run the following commands as needed:
+/// To locate the log files, compress/uncompress them, and read their contents, run the following commands as needed:
 /// find ../logs -name "*.txt"
 /// find ../logs -name "*.gz"
 /// gzip ../logs/dummy-log.txt
+/// unzip ../logs/logs.zip //these are zipped log files from GitHub codespaces
 /// cat ../logs/dummy-log.txt
 /// cargo run ../logs/dummy-log.txt
 /// cargo run ../logs/dummy-log.gz
