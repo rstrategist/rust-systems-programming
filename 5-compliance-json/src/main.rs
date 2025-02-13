@@ -1,13 +1,13 @@
 //! This application loads compliance rules from a JSON file and parses them into a vector of `ComplianceRule` structs.
-//! The JSON file is loaded from the `rules.json` file in the same directory as the source code.
+//! The JSON file is loaded from the `../../compliance-rules/rules.json` file.
 //! The JSON file contains an array of objects, each representing a compliance rule.
 //! The application uses the `serde` crate to deserialize the JSON into a vector of `ComplianceRule` structs.
 
 use serde::Deserialize;
 use serde_json;
 
-// Load the regex rules.json file to provide configs
-const JSON: &str = include_str!("../rules.json");
+// Load the rules.json file to provide configs
+const JSON: &str = include_str!("../../compliance-rules/rules.json");
 
 #[derive(Deserialize, Debug)]
 struct ComplianceRule {
