@@ -1,0 +1,32 @@
+[
+  {
+    "path_regex": "^/etc/",
+    "file_permissions": 420,
+    "required_files": ["passwd", "group"],
+    "non_existent_files": ["shadow"]
+  },
+  {
+    "path_regex": "^/var/log/",
+    "file_permissions": 640,
+    "required_files": ["syslog"],
+    "non_existent_files": ["debug"]
+  },
+  {
+    "path_regex": "^/home/.*/",
+    "file_permissions": 700,
+    "required_files": [],
+    "non_existent_files": ["temp"]
+  },
+  {
+    "path_regex": "^/opt/program/bin/",
+    "file_permissions": 755,
+    "required_files": ["program"],
+    "non_existent_files": ["program_old"]
+  },
+  {
+    "path_regex": "^/opt/program/lib/",
+    "file_permissions": 644,
+    "required_files": [],
+    "non_existent_files": ["lib_old"]
+  }
+]

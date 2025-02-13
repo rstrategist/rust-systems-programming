@@ -3,11 +3,14 @@
 //! The JSON file contains an array of objects, each representing a compliance rule.
 //! The application uses the `serde` crate to deserialize the JSON into a vector of `ComplianceRule` structs.
 
+use glob::glob;
 use serde::Deserialize;
 use serde_json;
+use std::fs;
+use std::os::unix::fs::PermissionsExt;
 
 // Load the regex rules.json file to provide configs
-const JSON: &str = include_str!("../rules.json");
+const JSON: &str = include_str!("../../compliance-rules/rules.json");
 
 #[derive(Deserialize, Debug)]
 struct ComplianceRule {
@@ -42,10 +45,12 @@ impl ComplianceRule {
 
 // Load the rules.json file and parse it into a vector of ComplianceRule structs
 fn load_rules() -> Vec<ComplianceRule> {
+    // Load the compliance rules from the JSON file
     // Deserialize the JSON string into a vector of ComplianceRule structs
     // and return the vector. Note this is not safe and will panic if the JSON
     // is not in the expected format. This is fine for this example, but in a
     // real application we would want to handle this error more gracefully.
+    println!("Loading compliance rules from JSON file...");
     let loaded_json: Vec<ComplianceRule> = serde_json::from_str(JSON).unwrap();
 
     let mut rules: Vec<ComplianceRule> = Vec::new();
@@ -60,9 +65,46 @@ fn load_rules() -> Vec<ComplianceRule> {
     rules
 }
 
+fn apply_rules(rules: Vec<ComplianceRule>) {
+    // Iterate over the rules and apply them to the file system
+    println!("Applying compliance rules...");
+    for rule in rules {
+        let mut seen_files: Vec<String> = Vec::new();
+        for entry in glob(&rule.path_regex).expect("Failed to read glob pattern") {
+            match entry {
+                Ok(path) => {
+                    if path.is_dir() {
+                        continue;
+                    }
+                    seen_files.push(path.to_str().unwrap().to_string());
+                    let metadata = fs::metadata(&path).unwrap();
+                    if metadata.permissions().mode() != rule.file_permissions {
+                        println!(
+                            "[FAIL] Incorrect file permissions for path: {:?}",
+                            path.display()
+                        );
+                    }
+                }
+                Err(e) => println!("{:?}", e),
+            }
+        }
+
+        for file in rule.required_files {
+            if !seen_files.contains(&file) {
+                println!(
+                    "[FAIL] Required file {file} not found in path {}: ",
+                    rule.path_regex
+                );
+            }
+        }
+    }
+}
+
 fn main() {
     // Load the compliance rules from the JSON file
     let rules = load_rules();
     // Print the loaded rules in a pretty format
     println!("{:#?}", rules);
+    // Apply the rules to the file system
+    apply_rules(rules);
 }
